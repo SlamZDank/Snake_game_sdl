@@ -33,8 +33,8 @@ future versions without problems!
 
 # Performance
 
-This game is so simple and doesn't need that much of power to run, it can run on your grandma's toaster  
-and your family's smart samsung fridge for that i know.
+This game is so simple and doesn't need that much of power to run, it can run on your grandma's toaster 
+and your family's smart samsung fridge for what i know.
 
 # Compiling and running locally
 
