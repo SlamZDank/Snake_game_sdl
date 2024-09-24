@@ -1,5 +1,8 @@
-# Snake_game_sdl
+# Snake Game
 
+<p align="center">
+  <img src="/img/Screenshot_20240924_210921.png" />
+</p>
 A simple, yet customizable game of snake written in rust and uses sdl2.
 
 
@@ -20,7 +23,7 @@ A: LEFT
 S: DOWN
 D: RIGHT
 
-If you have another keyboard layout refer to main.rs at line (?)
+If you have another keyboard layout refer to main.rs starting from line 209
 ```
 
 # Compatibility
@@ -42,3 +45,4 @@ git clone "https://github.com/SlamZDank/Snake_game_sdl/"
 cd ./Snake_game_sdl
 cargo run -- --width <width> --height <height> --border <border> --obstacles <obstacles> --tickspeed <tickspeed>
 ```
+
