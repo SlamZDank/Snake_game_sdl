@@ -46,3 +46,4 @@ cd ./Snake_game_sdl
 cargo run -- --width <width> --height <height> --border <border> --obstacles <obstacles> --tickspeed <tickspeed>
 ```
 
+# Flag: CyberTrace{FR33_GAM3_F0R_u}
