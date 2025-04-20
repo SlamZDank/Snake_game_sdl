@@ -8,11 +8,11 @@ use sdl2::video::Window;
 use sdl2::video::WindowContext;
 use snake_game_sdl::model::Direction;
 use snake_game_sdl::*;
-use snake_game_sdl::{PLAYGROUND_HEIGHT, PLAYGROUND_WIDTH};
 use std::env;
+use std::str::from_utf8;
 use std::time::Duration;
 
-const WINDOW_TITLE: &str = "Snake Game";
+const WINDOW_TITLE: &str = "Snake 🍎 🐍";
 const SQUARE_SIZE: u32 = 16;
 const PIXEL_PADDING: u32 = 3;
 
@@ -116,52 +116,72 @@ fn dummy_texture<'a>(
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let matched_args = command!()
-        .version("1.0.0")
+        .version("1.0.1 CyberTrace Edition")
         .author("SlamZDank")
-        .about("A simple yet configurable snake game using sdl")
+        .about("A simple to use yet configurable snake game using sdl, CyberTrace Edition.")
         .arg(
             Arg::new("width")
                 .long("width")
                 .help("Sets the width of the game board by grid square size.")
-                .required(true)
+                .required(false)
                 .value_parser(clap::value_parser!(u32).range(21..=1000)),
         )
         .arg(
             Arg::new("height")
                 .long("height")
-                .help("Sets the height of the game board by grid square size.")
-                .required(true)
+                .help("Sets the of the game board by grid square size.")
+                .required(false)
                 .value_parser(clap::value_parser!(u32).range(21..=1000)),
         )
         .arg(
             Arg::new("border")
                 .long("border")
                 .help("Sets the border of the game board by grid square size.")
-                .required(true)
+                .required(false)
                 .value_parser(clap::value_parser!(bool)),
         )
         .arg(
             Arg::new("obstacles")
                 .long("obstacles")
                 .help("Sets the number of obstacles generated randomly throughout the board.")
-                .required(true)
+                .required(false)
                 .value_parser(clap::value_parser!(u32).range(0..=100)),
         )
         .arg(
             Arg::new("tickspeed")
                 .long("tickspeed")
                 .help("Sets the tick speed to a value in milliseconds.")
-                .required(true)
+                .required(false)
                 .value_parser(clap::value_parser!(u32).range(10..=5000)),
         )
         .get_matches();
 
-    let width = matched_args.get_one::<u32>("width").unwrap();
-    let height = matched_args.get_one::<u32>("height").unwrap();
-    let border = matched_args.get_one::<bool>("border").unwrap();
-    let obstacles = matched_args.get_one::<u32>("obstacles").unwrap();
-    let tickspeed = matched_args.get_one::<u32>("tickspeed").unwrap();
+    let width: u32 = match matched_args.get_one::<u32>("width") {
+        Some(selected_width) => *selected_width,
+        None => 40,
+    };
 
+    let height: u32 = match matched_args.get_one::<u32>("height") {
+        Some(selected_height) => *selected_height,
+        None => 40,
+    };
+
+    let obstacles: u32 = match matched_args.get_one::<u32>("obstacles") {
+        Some(selected_obstacles) => *selected_obstacles,
+        None => 42,
+    };
+
+    let border: bool = match matched_args.get_one::<bool>("border") {
+        Some(is_border_allowed) => *is_border_allowed,
+        None => false,
+    };
+
+    let tickspeed: u32 = match matched_args.get_one::<u32>("tickspeed") {
+        Some(selected_tickspeed) => *selected_tickspeed,
+        None => 150,
+    };
+
+    // this variable makes sdl run it in wayland
     let is_wayland = env::var("WAYLAND_DISPLAY").is_ok();
     if is_wayland {
         env::set_var("SDL_VIDEODRIVER", "wayland");
@@ -197,7 +217,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (texture_snake, texture_apple, texture_collision) =
         dummy_texture(&mut canvas, &texture_creator)?;
 
-    let mut game = SnakeGame::from(*width, *height, *border, (*obstacles > 0, *obstacles)); // the initialization of the game
+    let mut game = SnakeGame::from(width, height, border, (obstacles > 0, obstacles)); // the initialization of the game
     print!("{}[2J", 27_u8 as char);
     println!("SDL Renderer: \"{}\"", canvas.info().name);
     println!("Welcome!\nPress <P> to pause!\nPress <R> to restart!");
@@ -217,7 +237,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     keycode: Some(Keycode::R),
                     ..
                 } => {
-                    game = SnakeGame::from(*width, *height, *border, (*obstacles > 0, *obstacles));
+                    game = SnakeGame::from(width, height, border, (obstacles > 0, obstacles));
 
                     print!("{}[2J", 27_u8 as char);
                     println!("Welcome!\nPress <P> to pause!\nPress <R> to restart!");
@@ -270,7 +290,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         if game.state != GameState::GameOver && game.snake.body.len() != old_score {
             print!("{}[2J", 27_u8 as char);
-            println!("Welcome!\nPress <P> to pause!\nPress <R> to restart!");
+            if width == 55
+                && height == 35
+                && border
+                && game.snake.body.len() == 25
+                && tickspeed == 150
+            {
+                println!(
+                    "{}",
+                    from_utf8(&xor_obfuscate(&ENCRYPTED_MESSAGE, &KEY)).unwrap()
+                );
+            } else {
+                println!("Welcome!");
+            }
+            println!("Press <P> to pause!\nPress <R> to restart!");
             println!("Score: {}", game.snake.body.len());
             old_score = game.snake.body.len();
         }
@@ -325,7 +358,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         canvas.present();
-        std::thread::sleep(Duration::from_millis(*tickspeed as u64));
+        std::thread::sleep(Duration::from_millis(tickspeed as u64));
 
         ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60)); // sloppy FPS limit for
                                                                        // weird stuff
